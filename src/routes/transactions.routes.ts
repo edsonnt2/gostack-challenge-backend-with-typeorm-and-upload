@@ -26,7 +26,7 @@ transactionsRouter.post('/', async (req, res) => {
   const createTransactionService = new CreateTransactionService();
   const { title, value, type, category } = req.body;
 
-  const { category_id } = await createCategoryService.execute({
+  const NewCategory = await createCategoryService.execute({
     title: category,
   });
 
@@ -34,7 +34,7 @@ transactionsRouter.post('/', async (req, res) => {
     title,
     value,
     type: type.trim(),
-    category_id,
+    category: NewCategory,
   });
 
   transation.category = category;

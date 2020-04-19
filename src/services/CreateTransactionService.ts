@@ -3,12 +3,13 @@ import AppError from '../errors/AppError';
 
 import Transaction from '../models/Transaction';
 import TransactionsRepository from '../repositories/TransactionsRepository';
+import Category from '../models/Category';
 
 interface Request {
   title: string;
   value: number;
   type: 'income' | 'outcome';
-  category_id: string;
+  category: Category;
 }
 
 class CreateTransactionService {
@@ -16,22 +17,20 @@ class CreateTransactionService {
     title,
     value,
     type,
-    category_id,
+    category,
   }: Request): Promise<Transaction> {
     const transactionRepository = getCustomRepository(TransactionsRepository);
 
     const balance = await transactionRepository.getBalance();
 
     if (type === 'outcome' && balance.outcome + value > balance.income)
-      throw new AppError(
-        `Valor insuficiente ! Tem apenas ${balance.total} em caixa para saque.`,
-      );
+      throw new AppError("You don't have enough balance");
 
     const transaction = transactionRepository.create({
       title,
       value,
       type,
-      category_id,
+      category,
     });
 
     await transactionRepository.save(transaction);
